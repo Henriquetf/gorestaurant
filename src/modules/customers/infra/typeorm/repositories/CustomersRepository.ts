@@ -2,6 +2,8 @@ import { getRepository, Repository } from 'typeorm';
 
 import ICustomersRepository from '@modules/customers/repositories/ICustomersRepository';
 
+import ICreateCustomerDTO from '@modules/customers/dtos/ICreateCustomerDTO';
+
 import Customer from '../entities/Customer';
 
 export default class CustomerRepository implements ICustomersRepository {
@@ -11,12 +13,22 @@ export default class CustomerRepository implements ICustomersRepository {
     this.ormRepository = getRepository(Customer);
   }
 
-  create(): Promise<Customer> {
-    throw new Error('Method not implemented.');
+  public async create(data: ICreateCustomerDTO): Promise<Customer> {
+    const newCustomer = this.ormRepository.create(data);
+
+    await this.ormRepository.save(newCustomer);
+
+    return newCustomer;
   }
 
-  findByEmail(email: string): Promise<Customer | null> {
-    throw new Error('Method not implemented.');
+  public async findByEmail(email: string): Promise<Customer | null> {
+    const customer = await this.ormRepository.findOne({
+      where: {
+        email,
+      },
+    });
+
+    return customer || null;
   }
 
   findById(id: string): Promise<Customer | null> {

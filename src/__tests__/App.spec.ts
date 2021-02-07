@@ -1,17 +1,15 @@
 import request from 'supertest';
-
 import { Connection, getConnection, getRepository } from 'typeorm';
+
 import createConnection from '@shared/infra/typeorm/createConnection';
-
 import Product from '@modules/products/infra/typeorm/entities/Product';
-
 import app from '@shared/infra/http/app';
 
 let connection: Connection;
 
 describe('App', () => {
   beforeAll(async () => {
-    connection = await createConnection('test-connection');
+    connection = await createConnection();
 
     await connection.query('DROP TABLE IF EXISTS orders_products');
     await connection.query('DROP TABLE IF EXISTS orders');
@@ -50,7 +48,7 @@ describe('App', () => {
     );
   });
 
-  it('should not be able to create a customer with one e-mail thats already registered', async () => {
+  it('should not be able to create a customer with an e-mail thats already registered', async () => {
     const customer = await request(app).post('/customers').send({
       name: 'GoRestaurant',
       email: 'oi@gorestaurant.com.br',
@@ -69,6 +67,13 @@ describe('App', () => {
     });
 
     expect(response.status).toBe(400);
+
+    const whitespaceResponse = await request(app).post('/customers').send({
+      name: 'GoRestaurant',
+      email: '  oi@gorestaurant.com.br   ',
+    });
+
+    expect(whitespaceResponse.status).toBe(400);
   });
 
   it('should be able to create a new product', async () => {
@@ -109,6 +114,14 @@ describe('App', () => {
     });
 
     expect(response.status).toBe(400);
+
+    const whitespaceResponse = await request(app).post('/products').send({
+      name: '   Produto 01  ',
+      price: 500,
+      quantity: 50,
+    });
+
+    expect(whitespaceResponse.status).toBe(400);
   });
 
   it('should be able to create a new order', async () => {
