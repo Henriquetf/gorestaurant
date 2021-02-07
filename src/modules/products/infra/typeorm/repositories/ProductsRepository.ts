@@ -3,16 +3,33 @@ import IUpdateProductQuantityDTO from '@modules/products/dtos/IUpdateProductQuan
 import IProductsRepository, {
   IFindProducts,
 } from '@modules/products/repositories/IProductsRepository';
+import { getRepository, Repository } from 'typeorm';
 
 import Product from '../entities/Product';
 
 export default class ProductsRepository implements IProductsRepository {
-  create(data: ICreateProductDTO): Promise<Product> {
-    throw new Error('Method not implemented.');
+  private ormRepository: Repository<Product>;
+
+  constructor() {
+    this.ormRepository = getRepository(Product);
   }
 
-  findByName(name: string): Promise<Product | null> {
-    throw new Error('Method not implemented.');
+  public async create(data: ICreateProductDTO): Promise<Product> {
+    const newProduct = this.ormRepository.create(data);
+
+    await this.ormRepository.save(newProduct);
+
+    return newProduct;
+  }
+
+  public async findByName(name: string): Promise<Product | null> {
+    const product = await this.ormRepository.findOne({
+      where: {
+        name,
+      },
+    });
+
+    return product || null;
   }
 
   findAllById(products: IFindProducts[]): Promise<Product[]> {
