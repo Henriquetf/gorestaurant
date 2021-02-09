@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -30,7 +31,10 @@ export default class Order {
   @JoinColumn({ name: 'customer_id' })
   customer?: Customer;
 
-  @OneToMany(() => OrderProducts, (product) => product.order)
+  @OneToMany(() => OrderProducts, (product) => product.order, {
+    cascade: true,
+  })
+  @JoinTable({ name: 'orders_products' })
   products?: OrderProducts[];
 
   @CreateDateColumn({ name: 'created_at' })

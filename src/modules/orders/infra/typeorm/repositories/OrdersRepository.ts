@@ -12,11 +12,25 @@ export default class OrdersRepository implements IOrdersRepository {
     this.ormRepository = getRepository(Order);
   }
 
-  create(data: ICreateOrderDTO): Promise<Order> {
-    throw new Error('Method not implemented.');
+  public async create({ customer, products }: ICreateOrderDTO): Promise<Order> {
+    const newOrder = this.ormRepository.create({
+      customer,
+      products,
+    });
+
+    await this.ormRepository.save(newOrder);
+
+    return newOrder;
   }
 
-  findById(id: string): Promise<Order | undefined> {
-    throw new Error('Method not implemented.');
+  public async findById(id: string): Promise<Order | null> {
+    const order = await this.ormRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['products', 'customer'],
+    });
+
+    return order || null;
   }
 }

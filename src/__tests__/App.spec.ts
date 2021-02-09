@@ -155,9 +155,9 @@ describe('App', () => {
           name: 'GoRestaurant',
           email: 'oi@gorestaurant.com.br',
         }),
-        order_products: expect.arrayContaining([
+        products: expect.arrayContaining([
           expect.objectContaining({
-            product_id: product.body.id,
+            productId: product.body.id,
             price: '500.00',
             quantity: 5,
           }),
@@ -309,9 +309,9 @@ describe('App', () => {
           name: 'GoRestaurant',
           email: 'oi@gorestaurant.com.br',
         }),
-        order_products: expect.arrayContaining([
+        products: expect.arrayContaining([
           expect.objectContaining({
-            product_id: product.body.id,
+            productId: product.body.id,
             price: '500.00',
             quantity: 5,
           }),

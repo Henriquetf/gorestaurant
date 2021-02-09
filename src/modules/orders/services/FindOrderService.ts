@@ -15,5 +15,9 @@ export default class FindOrderService {
     @inject(Token.CustomersRepository) private customersRepository: ICustomersRepository,
   ) {}
 
-  public async execute(): Promise<Order | null> {}
+  public async execute(id: string): Promise<Order | null> {
+    const order = await this.ordersRepository.findById(id);
+
+    return order;
+  }
 }

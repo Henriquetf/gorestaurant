@@ -1,9 +1,8 @@
+import { getRepository, In, Repository } from 'typeorm';
+
 import ICreateProductDTO from '@modules/products/dtos/ICreateProductDTO';
 import IUpdateProductQuantityDTO from '@modules/products/dtos/IUpdateProductQuantityDTO';
-import IProductsRepository, {
-  IFindProducts,
-} from '@modules/products/repositories/IProductsRepository';
-import { getRepository, Repository } from 'typeorm';
+import IProductsRepository from '@modules/products/repositories/IProductsRepository';
 
 import Product from '../entities/Product';
 
@@ -32,11 +31,17 @@ export default class ProductsRepository implements IProductsRepository {
     return product || null;
   }
 
-  findAllById(products: IFindProducts[]): Promise<Product[]> {
-    throw new Error('Method not implemented.');
+  public async findAllById(productsId: string[]): Promise<Product[]> {
+    const products = await this.ormRepository.find({
+      where: {
+        id: In(productsId),
+      },
+    });
+
+    return products || null;
   }
 
-  updateQuantity(products: IUpdateProductQuantityDTO[]): Promise<Product[]> {
-    throw new Error('Method not implemented.');
+  public async updateQuantity(products: IUpdateProductQuantityDTO[]): Promise<Product[]> {
+    return this.ormRepository.save(products);
   }
 }

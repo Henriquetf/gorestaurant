@@ -13,12 +13,14 @@ export default class CustomerRepository implements ICustomersRepository {
     this.ormRepository = getRepository(Customer);
   }
 
-  public async create(data: ICreateCustomerDTO): Promise<Customer> {
-    const newCustomer = this.ormRepository.create(data);
+  public async findById(id: string): Promise<Customer | null> {
+    const customer = await this.ormRepository.findOne({
+      where: {
+        id,
+      },
+    });
 
-    await this.ormRepository.save(newCustomer);
-
-    return newCustomer;
+    return customer || null;
   }
 
   public async findByEmail(email: string): Promise<Customer | null> {
@@ -31,7 +33,11 @@ export default class CustomerRepository implements ICustomersRepository {
     return customer || null;
   }
 
-  findById(id: string): Promise<Customer | null> {
-    throw new Error('Method not implemented.');
+  public async create(data: ICreateCustomerDTO): Promise<Customer> {
+    const newCustomer = this.ormRepository.create(data);
+
+    await this.ormRepository.save(newCustomer);
+
+    return newCustomer;
   }
 }
