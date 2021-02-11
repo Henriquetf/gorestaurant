@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { render, fireEvent, act, wait } from '@testing-library/react';
+import { render, fireEvent, act, waitFor } from '@testing-library/react';
 import AxiosMock from 'axios-mock-adapter';
 
-import api from '../../services/api';
+import api from '../../services/api/api';
 
 import Dashboard from '../../pages/Dashboard';
 
@@ -40,7 +40,7 @@ describe('Dashboard', () => {
 
     const { getByText, getByTestId } = render(<Dashboard />);
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
     });
 
@@ -67,7 +67,7 @@ describe('Dashboard', () => {
   it('should be able to add a new food plate', async () => {
     apiMock.onGet('foods').reply(200, []);
 
-    const { getByText, getByTestId, getByPlaceholderText, debug } = render(<Dashboard />);
+    const { getByText, getByTestId, getByPlaceholderText, getByLabelText } = render(<Dashboard />);
 
     act(() => {
       fireEvent.click(getByText('Novo Prato'));
@@ -75,7 +75,7 @@ describe('Dashboard', () => {
 
     const inputImage = getByPlaceholderText('Cole o link aqui');
     const inputName = getByPlaceholderText('Ex: Moda Italiana');
-    const inputValue = getByPlaceholderText('Ex: 19.90');
+    const inputValue = getByLabelText('Preço');
     const inputDescription = getByPlaceholderText('Descrição');
 
     await act(async () => {
@@ -111,7 +111,7 @@ describe('Dashboard', () => {
       fireEvent.click(getByTestId('add-food-button'));
     });
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
     });
 
@@ -133,9 +133,9 @@ describe('Dashboard', () => {
       },
     ]);
 
-    const { getByText, getByTestId, getByPlaceholderText } = render(<Dashboard />);
+    const { getByText, getByTestId, getByPlaceholderText, getByLabelText } = render(<Dashboard />);
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
     });
 
@@ -150,7 +150,7 @@ describe('Dashboard', () => {
 
     const inputImage = getByPlaceholderText('Cole o link aqui');
     const inputName = getByPlaceholderText('Ex: Moda Italiana');
-    const inputValue = getByPlaceholderText('Ex: 19.90');
+    const inputValue = getByLabelText('Preço');
     const inputDescription = getByPlaceholderText('Descrição');
 
     await act(async () => {
@@ -186,7 +186,7 @@ describe('Dashboard', () => {
       fireEvent.click(getByTestId('edit-food-button'));
     });
 
-    await wait(() => expect(getByText('Veggie')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Veggie')).toBeTruthy(), {
       timeout: 200,
     });
 
@@ -214,7 +214,7 @@ describe('Dashboard', () => {
 
     const { getByText, getByTestId } = render(<Dashboard />);
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
     });
 
@@ -227,7 +227,7 @@ describe('Dashboard', () => {
       fireEvent.click(getByTestId('remove-food-1'));
     });
 
-    expect(getByTestId('foods-list')).toBeEmpty();
+    await waitFor(() => expect(getByTestId('foods-list')).toBeEmptyDOMElement());
   });
 
   it('should be able to update the availibility of a food plate', async () => {
@@ -244,7 +244,7 @@ describe('Dashboard', () => {
 
     const { getByText, getByTestId } = render(<Dashboard />);
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
     });
 
@@ -254,7 +254,7 @@ describe('Dashboard', () => {
     expect(getByTestId('remove-food-1')).toBeTruthy();
     expect(getByTestId('edit-food-1')).toBeTruthy();
 
-    apiMock.onPut('foods/1').reply(200, {
+    apiMock.onPatch('foods/1').reply(200, {
       id: 1,
       name: 'Ao molho',
       description: 'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
@@ -267,7 +267,7 @@ describe('Dashboard', () => {
       fireEvent.click(getByTestId('change-status-food-1'));
     });
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
     });
 
@@ -281,7 +281,7 @@ describe('Dashboard', () => {
       fireEvent.click(getByTestId('change-status-food-1'));
     });
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
     });
 
