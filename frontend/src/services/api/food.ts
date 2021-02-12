@@ -8,7 +8,10 @@ export async function fetchFoods(): Promise<FoodPlate[]> {
 }
 
 export async function createFood(food: PartialFoodPlate): Promise<FoodPlate> {
-  const request = await api.post<FoodPlate>('foods', food);
+  const request = await api.post<FoodPlate>('foods', {
+    available: true,
+    ...food,
+  });
 
   return request.data;
 }
