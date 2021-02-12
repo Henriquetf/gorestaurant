@@ -20,6 +20,8 @@ export const Container = styled.div`
   background: linear-gradient(to bottom, #c72828 140px, #fff 0);
 
   .Dashboard__loader {
+    color: white;
+
     text-align: center;
     margin-bottom: 20px;
 
@@ -29,9 +31,7 @@ export const Container = styled.div`
   }
 
   .Dashboard__loader--error {
-    color: white;
     font-size: 24px;
-    margin-bottom: 20px;
   }
 `;
 

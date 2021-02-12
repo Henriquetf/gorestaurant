@@ -84,7 +84,7 @@ function Dashboard() {
         );
 
       case LoadingState.ERROR:
-        return <p className="Dashboard__loader--error">{errorMessage}</p>;
+        return <p className="Dashboard__loader Dashboard__loader--error">{errorMessage}</p>;
 
       default:
         return null;
