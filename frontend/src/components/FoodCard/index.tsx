@@ -1,36 +1,29 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { FiEdit3, FiTrash } from 'react-icons/fi';
 
+import { useFoodList } from '../../hooks/useFoodList';
 import { FoodPlate } from '../../models/food';
-import { setAvailable } from '../../services/api/food';
 
 import { Container, Content, Footer, Header, Price } from './styles';
 
 interface FoodCardProps {
   product: FoodPlate;
-  onEdit: (food: FoodPlate) => void;
-  onDelete: (id: number) => void;
 }
 
-function FoodCard({ product, onEdit, onDelete }: FoodCardProps) {
-  const [isAvailable, setIsAvailable] = useState(product.available);
+function FoodCard({ product }: FoodCardProps) {
+  const { setAvailable, removeFood, setEditingFood } = useFoodList();
 
   const handleClickEdit = useCallback(() => {
-    onEdit(product);
-  }, [onEdit, product]);
+    setEditingFood(product);
+  }, [setEditingFood, product]);
 
-  const handleClickDelete = useCallback(() => {
-    onDelete(product.id);
-  }, [onDelete, product.id]);
+  const handleClickDelete = useCallback(async () => {
+    await removeFood(product.id);
+  }, [removeFood, product.id]);
 
   const toggleAvailable = useCallback(async () => {
-    setIsAvailable(!isAvailable);
-
-    await setAvailable({
-      available: !isAvailable,
-      id: product.id,
-    });
-  }, [isAvailable, product.id]);
+    await setAvailable(product.id, !product.available);
+  }, [product.available, product.id, setAvailable]);
 
   return (
     <Container>
@@ -42,7 +35,7 @@ function FoodCard({ product, onEdit, onDelete }: FoodCardProps) {
 
         <p>{product.description}</p>
 
-        <Price available={isAvailable}>
+        <Price available={product.available}>
           R$
           <strong>{product.price}</strong>
         </Price>
@@ -56,13 +49,13 @@ function FoodCard({ product, onEdit, onDelete }: FoodCardProps) {
         </button>
 
         <div>
-          <span>{isAvailable ? 'Disponível' : 'Indisponível'}</span>
+          <span>{product.available ? 'Disponível' : 'Indisponível'}</span>
 
           <label htmlFor={`change-status-food-${product.id}`} className="switch">
             <input
               id={`change-status-food-${product.id}`}
               type="checkbox"
-              checked={isAvailable}
+              checked={product.available}
               onChange={toggleAvailable}
               name={`change-status-food-${product.id}`}
               data-testid={`change-status-food-${product.id}`}

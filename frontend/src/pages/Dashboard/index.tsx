@@ -1,27 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BiLoaderCircle } from 'react-icons/bi';
 
-import { Container, Content } from './styles';
-
 import FoodCard from '../../components/FoodCard';
-import { deleteFood, fetchFoods } from '../../services/api/food';
-import { FoodPlate } from '../../models/food';
 import Header from '../../components/Header';
 import AddFoodModal from '../../components/AddFoodModal';
 import EditFoodModal from '../../components/EditFoodModal';
 
-enum LoadingState {
-  LOADING,
-  LOADED,
-  ERROR,
-}
+import { useFoodList } from '../../hooks/useFoodList';
+
+import { Container, Content } from './styles';
+import { LoadingState } from '../../context/FoodListContext';
 
 function Dashboard() {
-  const [loadingState, setLoadingState] = useState<LoadingState>(LoadingState.LOADING);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { foodList, editingFood, setEditingFood, loadingState, errorMessage } = useFoodList();
 
-  const [foods, setFoods] = useState<FoodPlate[]>([]);
-  const [editingFood, setEditingFood] = useState<FoodPlate | null>(null);
   const [isAddFoodModalOpen, setIsAddFoodModalOpen] = useState(false);
   const [isEditFoodModalOpen, setIsEditFoodModalOpen] = useState(false);
 
@@ -29,50 +21,17 @@ function Dashboard() {
     setIsAddFoodModalOpen((prevState) => !prevState);
   }, []);
 
-  const toggleEditFoodModal = useCallback(() => {
-    setIsEditFoodModalOpen((prevState) => !prevState);
-  }, []);
+  const hideEditFoodModal = useCallback(() => {
+    setEditingFood(null);
+  }, [setEditingFood]);
 
-  const onNewFoodAdded = useCallback((newFood: FoodPlate) => {
-    setFoods((prevState) => [...prevState, newFood]);
-
+  const onNewFoodAdded = useCallback(() => {
     setIsAddFoodModalOpen(false);
   }, []);
 
-  const onFoodEdited = useCallback((updatedFood: FoodPlate) => {
-    setFoods((prevState) =>
-      prevState.map((food) => (food.id === updatedFood.id ? updatedFood : food)),
-    );
-
-    setIsEditFoodModalOpen(false);
-  }, []);
-
-  const handleOnEdit = useCallback((food: FoodPlate) => {
-    setIsEditFoodModalOpen((prevState) => !prevState);
-
-    setEditingFood(food);
-  }, []);
-
-  const handleOnDelete = useCallback(async (id: number) => {
-    await deleteFood(id);
-
-    setFoods((prevState) => prevState.filter((food) => food.id !== id));
-  }, []);
-
-  const loadFoods = useCallback(async () => {
-    try {
-      const apiFoods = await fetchFoods();
-
-      setFoods(apiFoods);
-      setLoadingState(LoadingState.LOADED);
-    } catch (err) {
-      if (err instanceof Error) {
-        setErrorMessage(err.message);
-      }
-
-      setLoadingState(LoadingState.ERROR);
-    }
-  }, []);
+  useEffect(() => {
+    setIsEditFoodModalOpen(editingFood !== null);
+  }, [editingFood]);
 
   const loader = useMemo(() => {
     switch (loadingState) {
@@ -91,10 +50,6 @@ function Dashboard() {
     }
   }, [loadingState, errorMessage]);
 
-  useEffect(() => {
-    loadFoods().catch(console.log);
-  }, [loadFoods]);
-
   return (
     <>
       <Header onClickNewPlate={toggleAddFoodModal} />
@@ -102,13 +57,8 @@ function Dashboard() {
       <Container>
         {loader}
         <Content data-testid="foods-list">
-          {foods.map((food) => (
-            <FoodCard
-              key={food.id}
-              product={food}
-              onEdit={handleOnEdit}
-              onDelete={handleOnDelete}
-            />
+          {foodList.map((food) => (
+            <FoodCard key={food.id} product={food} />
           ))}
         </Content>
       </Container>
@@ -121,9 +71,8 @@ function Dashboard() {
 
       <EditFoodModal
         isOpen={isEditFoodModalOpen}
-        setIsOpen={toggleEditFoodModal}
+        setIsOpen={hideEditFoodModal}
         editingFood={editingFood}
-        onFoodEdited={onFoodEdited}
       />
     </>
   );

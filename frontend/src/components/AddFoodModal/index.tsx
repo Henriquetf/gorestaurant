@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { FiCheckSquare } from 'react-icons/fi';
 
+import { useFoodList } from '../../hooks/useFoodList';
 import { FoodPlate } from '../../models/food';
-import { createFood } from '../../services/api/food';
+
 import Button from '../Button';
 import Modal from '../Modal';
 
@@ -16,16 +17,17 @@ interface FormControls {
 }
 
 interface AddFoodModalProps {
-  onNewFoodAdded: (newFood: FoodPlate) => void;
   isOpen: boolean;
   setIsOpen: () => void;
+  onNewFoodAdded: (newFood: FoodPlate) => void;
 }
 
-function AddFoodModal({ onNewFoodAdded, isOpen, setIsOpen }: AddFoodModalProps) {
+function AddFoodModal({ isOpen, setIsOpen, onNewFoodAdded }: AddFoodModalProps) {
   const { register, handleSubmit } = useForm<FormControls>();
+  const { addFood } = useFoodList();
 
   const onSubmit = handleSubmit(async (data) => {
-    const newFood = await createFood(data);
+    const newFood = await addFood(data);
 
     onNewFoodAdded(newFood);
   });

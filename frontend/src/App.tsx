@@ -1,15 +1,18 @@
 import { BrowserRouter } from 'react-router-dom';
 
+import AppProvider from './context/AppProvider';
 import Routes from './routes';
 import GlobalStyles from './styles/global';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes />
+    <AppProvider>
+      <BrowserRouter>
+        <Routes />
 
-      <GlobalStyles />
-    </BrowserRouter>
+        <GlobalStyles />
+      </BrowserRouter>
+    </AppProvider>
   );
 }
 

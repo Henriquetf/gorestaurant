@@ -6,3 +6,5 @@ export interface FoodPlate {
   available: boolean;
   image: string;
 }
+
+export type PartialFoodPlate = Omit<FoodPlate, 'id' | 'available'>;

@@ -1,4 +1,4 @@
-import { FoodPlate } from '../../models/food';
+import { FoodPlate, PartialFoodPlate } from '../../models/food';
 import api from './api';
 
 export async function fetchFoods(): Promise<FoodPlate[]> {
@@ -7,7 +7,7 @@ export async function fetchFoods(): Promise<FoodPlate[]> {
   return request.data;
 }
 
-export async function createFood(food: Omit<FoodPlate, 'id' | 'available'>): Promise<FoodPlate> {
+export async function createFood(food: PartialFoodPlate): Promise<FoodPlate> {
   const request = await api.post<FoodPlate>('foods', food);
 
   return request.data;
@@ -17,19 +17,13 @@ export async function deleteFood(id: number): Promise<void> {
   await api.delete(`foods/${id}`);
 }
 
-interface SetAvailableParams {
-  id: number;
-  available: boolean;
+export async function toggleAvailable(id: number, available: boolean): Promise<FoodPlate> {
+  const response = await api.patch<FoodPlate>(`foods/${id}`, { available });
+
+  return response.data;
 }
 
-export async function setAvailable({ available, id }: SetAvailableParams): Promise<void> {
-  await api.patch(`foods/${id}`, { available });
-}
-
-export async function updateFood(
-  id: number,
-  data: Omit<FoodPlate, 'id' | 'available'>,
-): Promise<FoodPlate> {
+export async function updateFoodPlate(id: number, data: PartialFoodPlate): Promise<FoodPlate> {
   const response = await api.put<FoodPlate>(`foods/${id}`, data);
 
   return response.data;
