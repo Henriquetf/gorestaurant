@@ -6,6 +6,7 @@ import AxiosMock from 'axios-mock-adapter';
 import api from '../../services/api/api';
 
 import Dashboard from '../../pages/Dashboard';
+import AppProvider from '../../context/AppProvider';
 
 const apiMock = new AxiosMock(api);
 
@@ -38,7 +39,11 @@ describe('Dashboard', () => {
       },
     ]);
 
-    const { getByText, getByTestId } = render(<Dashboard />);
+    const { getByText, getByTestId } = render(
+      <AppProvider>
+        <Dashboard />
+      </AppProvider>,
+    );
 
     await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
@@ -67,7 +72,11 @@ describe('Dashboard', () => {
   it('should be able to add a new food plate', async () => {
     apiMock.onGet('foods').reply(200, []);
 
-    const { getByText, getByTestId, getByPlaceholderText, getByLabelText } = render(<Dashboard />);
+    const { getByText, getByTestId, getByPlaceholderText, getByLabelText } = render(
+      <AppProvider>
+        <Dashboard />
+      </AppProvider>,
+    );
 
     act(() => {
       fireEvent.click(getByText('Novo Prato'));
@@ -133,7 +142,11 @@ describe('Dashboard', () => {
       },
     ]);
 
-    const { getByText, getByTestId, getByPlaceholderText, getByLabelText } = render(<Dashboard />);
+    const { getByText, getByTestId, getByPlaceholderText, getByLabelText } = render(
+      <AppProvider>
+        <Dashboard />
+      </AppProvider>,
+    );
 
     await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
@@ -212,7 +225,11 @@ describe('Dashboard', () => {
 
     apiMock.onDelete('foods/1').reply(204);
 
-    const { getByText, getByTestId } = render(<Dashboard />);
+    const { getByText, getByTestId } = render(
+      <AppProvider>
+        <Dashboard />
+      </AppProvider>,
+    );
 
     await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
@@ -230,7 +247,7 @@ describe('Dashboard', () => {
     await waitFor(() => expect(getByTestId('foods-list')).toBeEmptyDOMElement());
   });
 
-  it('should be able to update the availibility of a food plate', async () => {
+  it('should be able to update the availability of a food plate', async () => {
     apiMock.onGet('foods').reply(200, [
       {
         id: 1,
@@ -242,7 +259,11 @@ describe('Dashboard', () => {
       },
     ]);
 
-    const { getByText, getByTestId } = render(<Dashboard />);
+    const { getByText, getByTestId } = render(
+      <AppProvider>
+        <Dashboard />
+      </AppProvider>,
+    );
 
     await waitFor(() => expect(getByText('Ao molho')).toBeTruthy(), {
       timeout: 200,
@@ -276,6 +297,15 @@ describe('Dashboard', () => {
     expect(getByText('Indisponível')).toBeTruthy();
     expect(getByTestId('remove-food-1')).toBeTruthy();
     expect(getByTestId('edit-food-1')).toBeTruthy();
+
+    apiMock.onPatch('foods/1').reply(200, {
+      id: 1,
+      name: 'Ao molho',
+      description: 'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+      price: '19.90',
+      available: true,
+      image: 'http://gorestaurant.com.br',
+    });
 
     await act(async () => {
       fireEvent.click(getByTestId('change-status-food-1'));

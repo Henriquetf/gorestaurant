@@ -80,6 +80,7 @@ export function FoodListProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
     loadFoods().catch(console.log);
   }, [loadFoods]);
 
